@@ -1,0 +1,17 @@
+package com.m4ssive.totemcounterv2;
+
+import com.m4ssive.totemcounterv2.gui.ConfigScreen;
+import com.terraformersmc.modmenu.api.ConfigScreenFactory;
+import com.terraformersmc.modmenu.api.ModMenuApi;
+
+/**
+ * Mod Menu integration for TotemCounterV2
+ */
+public class ModMenuIntegration implements ModMenuApi {
+    
+    @Override
+    public ConfigScreenFactory<?> getModConfigScreenFactory() {
+        return parent -> new ConfigScreen(parent, TotemCounterV2Mod.getInstance().getConfig());
+    }
+}
+

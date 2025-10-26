@@ -1,0 +1,13 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "com.m4ssive.totemcounterv2.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "client": [
+    "ClientPlayNetworkHandlerMixin",
+    "MouseMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
