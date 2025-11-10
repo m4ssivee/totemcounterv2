@@ -1,0 +1,45 @@
+{
+  "schemaVersion": 1,
+  "id": "totemcounterv2",
+  "version": "2.3.0",
+  "name": "TotemCounterV2",
+  "description": "Advanced totem pop counter for Crystal PVP with mouse-interactive HUD",
+  "authors": [
+    "m4ssive"
+  ],
+  "contact": {
+    "homepage": "https://github.com/m4ssivee/totemcounterv2",
+    "sources": "https://github.com/m4ssivee/totemcounterv2",
+    "issues": "https://github.com/m4ssivee/totemcounterv2/issues"
+  },
+  "license": "MIT",
+  "icon": "assets/totemcounterv2/icon.png",
+  "environment": "client",
+  "entrypoints": {
+    "client": [
+      "com.m4ssive.totemcounterv2.TotemCounterV2Mod"
+    ],
+    "modmenu": [
+      "com.m4ssive.totemcounterv2.ModMenuIntegration"
+    ]
+  },
+  "mixins": [
+    "m4ssive.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.15.11",
+    "fabric-api": "*",
+    "minecraft": ">=1.21 <1.22",
+    "java": ">=21",
+    "m4lib": ">=1.0.0"
+  },
+  "recommends": {
+    "modmenu": ">=11.0.0"
+  },
+  "custom": {
+    "modmenu": {
+      "badges": [ "client" ],
+      "banner": "assets/totemcounterv2/banner.png"
+    }
+  }
+}

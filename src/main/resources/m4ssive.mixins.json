@@ -1,0 +1,18 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "com.m4ssive.totemcounterv2.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "client": [
+    "ClientPlayNetworkHandlerMixin",
+    "MouseMixin",
+    "ChatInputMixin",
+    "ClientPlayerEntityMixin",
+    "ChatScreenMixin",
+    "PlayerListHudMixin",
+    "InGameHudMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 0
+  }
+}

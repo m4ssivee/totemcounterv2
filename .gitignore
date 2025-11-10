@@ -1,0 +1,101 @@
+# Gradle
+.gradle/
+build/
+out/
+bin/
+classes/
+
+# IDE
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/
+.settings/
+.classpath
+.project
+
+# Eclipse
+.metadata/
+bin/
+tmp/
+*.tmp
+*.bak
+*.swp
+*~.nib
+local.properties
+.loadpath
+.recommenders
+
+# IntelliJ IDEA
+out/
+.idea_modules/
+*.iml
+*.ipr
+*.iws
+
+# VS Code
+.vscode/
+
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Logs
+*.log
+logs/
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Dependency directories
+node_modules/
+
+# Build outputs
+build/
+dist/
+target/
+
+# Temporary files
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
+
+# Minecraft
+run/
+.minecraft/
+
+# Fabric
+remappedSrc/
+
+# Native libraries (if any)
+*.dll
+*.so
+*.dylib
+
+# Config files (optional - uncomment if you don't want to commit configs)
+# config/
+
+# Build scripts and temporary files
+*.bat
+*.sh
+*.py
+BUILD_*.md
+ECLIPSE_*.md
+*_FIX*.md
+*_HIZLI*.md
+*_INSTRUCTIONS*.md
+MODRINTH_*.txt
+ICON_README.txt
+icon.jpg
+modrinth_icon.png
+libs/
