@@ -129,7 +129,7 @@ Found a bug or have a suggestion?
 
 ## 📝 Credits
 
-- **Author**: m4ssive
+- **Author**: m4ssivee
 - **Repository**: [GitHub](https://github.com/m4ssivee/totemcounterv2)
 
 ## 📄 License
