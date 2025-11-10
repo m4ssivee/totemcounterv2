@@ -53,7 +53,7 @@ TotemCounterV2 is a feature-rich Minecraft mod designed specifically for Crystal
 ### 📜 Commands
 - `/resetcounter` - Reset totem counter
 - `/resetscoreboard` - Reset scoreboard (both commands trigger the same reset function)
-- `/imperial` - Easter egg command (displays special message)
+- `/imperial` - Our discord command (displays special message)
 
 ### 🎮 Keybinds
 - **Config Menu** - `H` or `L` key (both keys work, default is `H`)
