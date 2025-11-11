@@ -17,7 +17,8 @@
 
 TotemCounterV2 is a feature-rich Minecraft mod designed specifically for Crystal PVP servers. It provides a beautiful, customizable HUD that tracks totem pops for all players, with full mouse interaction support for drag-and-drop positioning and resizing.
 
-## ✨ Features
+## Dependecies https://github.com/m4ssivee/m4lib
+you must have m4lib to use all function off totemcounterV2
 
 ### 🎯 Core Functionality
 - **Real-time Totem Tracking** - Automatically detects and counts totem pops for all players
