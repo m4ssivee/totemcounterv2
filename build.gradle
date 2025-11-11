@@ -1,6 +1,7 @@
 plugins {
 	id 'fabric-loom' version '1.7-SNAPSHOT'
 	id 'maven-publish'
+	id 'eclipse'
 }
 
 sourceCompatibility = JavaVersion.VERSION_21
@@ -26,6 +27,7 @@ dependencies {
 	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 	
+	// m4lib dependency - Eclipse will resolve from composite build or local Maven
 	modImplementation 'com.m4ssive:m4lib:1.0.0'
 	
 	modCompileOnly "com.terraformersmc:modmenu:11.0.1"
@@ -58,3 +60,12 @@ jar {
 	}
 }
 
+eclipse {
+	project {
+		name = 'totemcounterv2'
+	}
+	classpath {
+		downloadSources = true
+		downloadJavadoc = true
+	}
+}
