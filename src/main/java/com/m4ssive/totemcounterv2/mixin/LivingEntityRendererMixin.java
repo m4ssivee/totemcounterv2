@@ -8,7 +8,7 @@ package com.m4ssive.totemcounterv2.mixin;
  * 
  * NOT: Nametag rendering artık m4lib/PlayerEntityMixin tarafından yapılıyor
  * TotemCounterV2/TotemCounterV2Mod.java'da registerNametagSuffix() metodu ile
- * provider'lar kaydediliyor ve m4lib bunları render ediyor
+ * provider'lar kaydediliyor ve m4lib bunları render ediyor m4lib indir lütfen
  */
 @org.spongepowered.asm.mixin.Mixin(net.minecraft.client.render.entity.LivingEntityRenderer.class)
 public class LivingEntityRendererMixin {
