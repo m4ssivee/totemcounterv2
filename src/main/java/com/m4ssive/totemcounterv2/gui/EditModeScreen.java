@@ -28,7 +28,7 @@ public class EditModeScreen extends Screen {
 
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-        this.renderBackground(context, mouseX, mouseY, delta);
+        // Sadece koyuca bir overlay çiz, renderBackground'ı çağırma (vanilla arka plan istemiyoruz)
         context.fill(0, 0, this.width, this.height, 0x60000000);
         
         if (totemHud != null) {
@@ -41,11 +41,11 @@ public class EditModeScreen extends Screen {
         
         context.fill(0, headerHeight - 2, this.width, headerHeight, 0xAA7b2cbf);
         
-        context.drawCenteredTextWithShadow(this.textRenderer, 
+        com.m4ssive.totemcounterv2.util.TextHelper.drawCenteredTextWithShadow(context, this.textRenderer, 
             Text.literal("§6§l✎ EDIT MODE").setStyle(net.minecraft.text.Style.EMPTY.withBold(true)),
             this.width / 2, 10, 0xFFFFFF);
         
-        context.drawCenteredTextWithShadow(this.textRenderer, 
+        com.m4ssive.totemcounterv2.util.TextHelper.drawCenteredTextWithShadow(context, this.textRenderer, 
             Text.literal("§eDrag §7to move • §bDrag corners §7to resize"),
             this.width / 2, 22, 0xE0E0E0);
         
@@ -53,7 +53,7 @@ public class EditModeScreen extends Screen {
         context.fillGradient(0, footerY, this.width, this.height, 
             0x80000000, 0xC0000000);
         
-        context.drawCenteredTextWithShadow(this.textRenderer, 
+        com.m4ssive.totemcounterv2.util.TextHelper.drawCenteredTextWithShadow(context, this.textRenderer, 
             Text.literal("§7Press §eK/ESC §7to save • §cQ §7to cancel"),
             this.width / 2, footerY + 8, 0xCCCCCC);
         
@@ -61,9 +61,7 @@ public class EditModeScreen extends Screen {
             String status = totemHud.isDragging() ? "§eDragging..." : 
                            totemHud.isResizing() ? "§bResizing..." : "§aReady";
             int statusX = this.width - 80;
-            context.drawTextWithShadow(this.textRenderer, 
-                Text.literal(status),
-                statusX, 10, 0xFFFFFF);
+            com.m4ssive.totemcounterv2.util.TextHelper.drawTextWithShadow(context, this.textRenderer, Text.literal(status), statusX, 10, 0xFFFFFF);
         }
     }
 
@@ -146,7 +144,7 @@ public class EditModeScreen extends Screen {
 
     @Override
     public boolean shouldPause() {
-        return true; // Oyunu duraklat - ekran kilitlensin
+        return false; // Oyunu durdurma - HudRenderCallback'in çalışması gerekiyor
     }
 
     @Override

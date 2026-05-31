@@ -45,7 +45,7 @@ public class ChatInputMixin {
             if (client != null && client.player != null) {
                 TotemCounterV2Mod.getInstance().getTotemTracker().clearPlayer(client.player.getUuid());
                 TotemCounterV2Mod.LOGGER.info("§a[TotemCounter] Player counter cleared (kit change detected: {}) - Player: {}", 
-                    command, client.player.getGameProfile().getName());
+                    command, client.player.getName().getString());
             }
             return;
         }
@@ -67,7 +67,7 @@ public class ChatInputMixin {
             if (client != null && client.player != null) {
                 TotemCounterV2Mod.getInstance().getTotemTracker().clearPlayer(client.player.getUuid());
                 TotemCounterV2Mod.LOGGER.info("§a[TotemCounter] Player counter cleared (kit change detected: {}) - Player: {}", 
-                    cmd, client.player.getGameProfile().getName());
+                    cmd, client.player.getName().getString());
             }
             return;
         }

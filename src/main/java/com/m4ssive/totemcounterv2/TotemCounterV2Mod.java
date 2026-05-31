@@ -107,11 +107,14 @@ public class TotemCounterV2Mod implements ClientModInitializer {
                 }
             }
             
-            if (openConfigKey.wasPressed() || (openConfigKeyAlt != null && openConfigKeyAlt.wasPressed())) {
+            // Critical NPE prevention: openConfigKey might be null if reflection fails
+            if (openConfigKey != null && openConfigKey.wasPressed()) {
+                MinecraftClient.getInstance().setScreen(new ConfigScreen(null, config));
+            } else if (openConfigKeyAlt != null && openConfigKeyAlt.wasPressed()) {
                 MinecraftClient.getInstance().setScreen(new ConfigScreen(null, config));
             }
             
-            if (toggleEditModeKey.wasPressed()) {
+            if (toggleEditModeKey != null && toggleEditModeKey.wasPressed()) {
                 if (!editMode) {
                     editMode = true;
                     MinecraftClient.getInstance().setScreen(new EditModeScreen());
@@ -128,8 +131,11 @@ public class TotemCounterV2Mod implements ClientModInitializer {
             }
         });
 
+
+        MethodChecker.check();
         LOGGER.info("TotemCounterV2 başarıyla yüklendi!");
     }
+
 
     public static TotemCounterV2Mod getInstance() {
         return instance;
@@ -318,29 +324,63 @@ public class TotemCounterV2Mod implements ClientModInitializer {
     }
     
     private void registerKeybinds() {
-        openConfigKey = KeyBindingHelper.registerKeyBinding(new KeyBinding(
-            "key.totemcounterv2.openconfig",
-            InputUtil.Type.KEYSYM,
-            config.configMenuKeybind,
-            "category.totemcounterv2"
-        ));
+        openConfigKey = createKeyBinding("key.totemcounterv2.openconfig", config.configMenuKeybind, "category.totemcounterv2");
+        toggleEditModeKey = createKeyBinding("key.totemcounterv2.toggleedit", GLFW.GLFW_KEY_K, "category.totemcounterv2");
         
-        openConfigKeyAlt = KeyBindingHelper.registerKeyBinding(new KeyBinding(
-            "key.totemcounterv2.openconfigalt",
-            InputUtil.Type.KEYSYM,
-            GLFW.GLFW_KEY_L,
-            "category.totemcounterv2"
-        ));
-        
-        toggleEditModeKey = KeyBindingHelper.registerKeyBinding(new KeyBinding(
-            "key.totemcounterv2.toggleedit",
-            InputUtil.Type.KEYSYM,
-            GLFW.GLFW_KEY_K,
-            "category.totemcounterv2"
-        ));
-        
-        LOGGER.info("Keybinds registered - Config key (H): {}, Alt key (L): {}", config.configMenuKeybind, GLFW.GLFW_KEY_L);
+        if (openConfigKey != null) KeyBindingHelper.registerKeyBinding(openConfigKey);
+        if (toggleEditModeKey != null) KeyBindingHelper.registerKeyBinding(toggleEditModeKey);
+
+        LOGGER.info("Keybinds created via reflection - Config key: {}, Toggle Edit: {}", config.configMenuKeybind, GLFW.GLFW_KEY_K);
     }
+
+    private KeyBinding createKeyBinding(String translationKey, int code, String category) {
+        StringBuilder dump = new StringBuilder("KeyBinding constructors for " + translationKey + ":");
+        for (java.lang.reflect.Constructor<?> c : KeyBinding.class.getConstructors()) {
+            dump.append("\n  ").append(c.toString());
+        }
+        LOGGER.info(dump.toString());
+
+        try {
+            return new KeyBinding(translationKey, InputUtil.Type.KEYSYM, code, category);
+        } catch (Throwable t) {
+            LOGGER.info("X Direct KeyBinding constructor failed for " + translationKey + " (" + t.getClass().getName() + "), attempting advanced reflection...");
+        }
+
+        try {
+            for (java.lang.reflect.Constructor<?> constructor : KeyBinding.class.getConstructors()) {
+                Class<?>[] paramTypes = constructor.getParameterTypes();
+                // 3 params: String, int, String
+                if (paramTypes.length == 3 && paramTypes[0] == String.class && 
+                    (paramTypes[1] == int.class || paramTypes[1] == Integer.class) && 
+                    paramTypes[2] == String.class) {
+                    LOGGER.info("V Found 3-arg constructor: " + constructor);
+                    return (KeyBinding) constructor.newInstance(translationKey, code, category);
+                }
+                
+                // 4 params
+                if (paramTypes.length == 4 && paramTypes[0] == String.class && paramTypes[3] == String.class) {
+                    try {
+                        Object typeArg = InputUtil.Type.KEYSYM;
+                        Object codeArg;
+                        if (paramTypes[2].isPrimitive() || paramTypes[2] == Integer.class) {
+                            codeArg = code;
+                        } else {
+                            codeArg = InputUtil.fromKeyCode(code, -1);
+                        }
+                        LOGGER.info("V Found 4-arg constructor: " + constructor);
+                        return (KeyBinding) constructor.newInstance(translationKey, typeArg, codeArg, category);
+                    } catch (Exception e) {}
+                }
+            }
+        } catch (Exception e) {
+            LOGGER.error("X Advanced reflection failed for KeyBinding: " + translationKey, e);
+        }
+        
+        return null; // Safety fallback
+    }
+
+
+
     
     public int getPopColor(int pops) {
         ModConfig config = getConfig();

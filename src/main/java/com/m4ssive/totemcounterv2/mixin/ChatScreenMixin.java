@@ -1,5 +1,6 @@
 package com.m4ssive.totemcounterv2.mixin;
 
+import com.m4ssive.totemcounterv2.GameProfileHelper;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.ChatScreen;
 import net.minecraft.client.gui.widget.TextFieldWidget;
@@ -55,14 +56,14 @@ public class ChatScreenMixin {
         List<String> matchingPlayers = new ArrayList<>();
         ClientPlayNetworkHandler nh = client.getNetworkHandler();
         for (PlayerListEntry entry : nh.getPlayerList()) {
-            String name = entry.getProfile().getName();
+            String name = GameProfileHelper.getName(entry.getProfile());
             if (name.toLowerCase().startsWith(playerNamePrefix.toLowerCase())) {
                 matchingPlayers.add(name);
             }
         }
         
         if (client.player != null) {
-            String selfName = client.player.getGameProfile().getName();
+            String selfName = GameProfileHelper.getName(client.player.getGameProfile());
             if (selfName.toLowerCase().startsWith(playerNamePrefix.toLowerCase()) && !matchingPlayers.contains(selfName)) {
                 matchingPlayers.add(selfName);
             }

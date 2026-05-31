@@ -9,5 +9,3 @@ pluginManagement {
 }
 
 rootProject.name = 'totemcounterv2'
-
-includeBuild '../m4lib'

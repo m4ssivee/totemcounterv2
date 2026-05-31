@@ -64,7 +64,7 @@ public class ClientPlayNetworkHandlerMixin {
             MinecraftClient client = MinecraftClient.getInstance();
             if (client != null && client.world != null) {
                 for (PlayerEntity player : client.world.getPlayers()) {
-                    String playerName = player.getGameProfile().getName();
+                    String playerName = player.getName().getString();
                     if (plainText.contains(playerName)) {
                         mod.getTotemTracker().clearPlayer(player.getUuid());
                         TotemCounterV2Mod.LOGGER.info("§a[TotemCounter] {}'s counter reset - kit loaded detected in chat", playerName);

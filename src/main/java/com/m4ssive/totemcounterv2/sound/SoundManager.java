@@ -9,8 +9,7 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.random.Random;
 
 public class SoundManager {
-    private static final MinecraftClient client = MinecraftClient.getInstance();
-    
+
     public enum SoundType {
         TOTEM("Totem", SoundEvents.ITEM_TOTEM_USE),
         NOTE_HARP("Note Harp", SoundEvents.BLOCK_NOTE_BLOCK_HARP.value()),
@@ -36,6 +35,7 @@ public class SoundManager {
     }
     
     public static void playTotemPopSound(SoundType soundType, float volume, float pitch) {
+        MinecraftClient client = MinecraftClient.getInstance();
         if (client == null) {
             TotemCounterV2Mod.LOGGER.warn("Client is null!");
             return;
@@ -81,6 +81,7 @@ public class SoundManager {
     }
     
     public static void playMilestoneSound(float baseVolume, float pitch) {
+        MinecraftClient client = MinecraftClient.getInstance();
         if (client == null) {
             TotemCounterV2Mod.LOGGER.warn("Client is null!");
             return;
@@ -104,13 +105,9 @@ public class SoundManager {
         
         SoundCategory category = SoundCategory.MASTER;
         
-        // Milestone için çok belirgin ses: Yüksek volume ve yüksek pitch
-        // Volume: Maksimum 1.0, ama baseVolume'u 2.0 ile çarparak geliyor
-        float volume = Math.min(baseVolume, 1.0f); // Maksimum 1.0
-        // Pitch: Daha yüksek, belirgin (örn. 2.0)
-        float finalPitch = Math.min(pitch, 2.0f); // Maksimum 2.0
+        float volume = Math.min(baseVolume, 1.0f);
+        float finalPitch = Math.min(pitch, 2.0f);
         
-        // İlk ses - yüksek pitch
         PositionedSoundInstance sound1 = new PositionedSoundInstance(
             soundEvent,
             category,
@@ -122,7 +119,6 @@ public class SoundManager {
             client.player.getZ()
         );
         
-        // İkinci ses - biraz daha düşük pitch (harmoni efekti)
         PositionedSoundInstance sound2 = new PositionedSoundInstance(
             soundEvent,
             category,
@@ -134,13 +130,10 @@ public class SoundManager {
             client.player.getZ()
         );
         
-        TotemCounterV2Mod.LOGGER.info("§6§l[SoundManager] Playing milestone sound: NOTE_PLING at volume: {}, pitch: {} (BELIRGIN)", 
+        TotemCounterV2Mod.LOGGER.info("§6§l[SoundManager] Playing milestone sound: NOTE_PLING at volume: {}, pitch: {}", 
             volume, finalPitch);
         
-        // İlk sesi çal - çok belirgin, yüksek pitch
         client.getSoundManager().play(sound1);
-        // İkinci sesi de hemen çal (çift ses efekti - daha belirgin)
         client.getSoundManager().play(sound2);
     }
 }
-

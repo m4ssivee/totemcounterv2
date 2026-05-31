@@ -41,7 +41,7 @@ public class ClientPlayerEntityMixin {
         
         if (filledSlots >= 35 && lastInventoryFillCount < 35) {
             mod.getTotemTracker().clearPlayer(player.getUuid());
-            String playerName = player.getGameProfile().getName();
+            String playerName = player.getName().getString();
             TotemCounterV2Mod.LOGGER.info("§a[TotemCounter] {}'s counter reset - inventory full", playerName);
         }
         lastInventoryFillCount = filledSlots;
@@ -59,7 +59,7 @@ public class ClientPlayerEntityMixin {
         
         if (armorFull && !lastArmorWasFull && filledSlots > 10) {
             mod.getTotemTracker().clearPlayer(player.getUuid());
-            String playerName = player.getGameProfile().getName();
+            String playerName = player.getName().getString();
             TotemCounterV2Mod.LOGGER.info("§a[TotemCounter] {}'s counter reset - armor durability full", playerName);
         }
         lastArmorWasFull = armorFull;
@@ -73,7 +73,7 @@ public class ClientPlayerEntityMixin {
         if (isDead && !wasDead) {
             // Oyuncu öldü - counter'ı sıfırla
             mod.getTotemTracker().clearPlayer(player.getUuid());
-            String playerName = player.getGameProfile().getName();
+            String playerName = player.getName().getString();
             TotemCounterV2Mod.LOGGER.info("§a[TotemCounter] {}'s counter reset - player died", playerName);
         }
         wasDead = isDead;

@@ -1,5 +1,7 @@
 package com.m4ssive.totemcounterv2.command;
 
+import com.m4ssive.totemcounterv2.GameProfileHelper;
+
 import com.m4ssive.totemcounterv2.TotemCounterV2Mod;
 import com.m4ssive.totemcounterv2.TotemTracker;
 import com.m4ssive.totemcounterv2.util.TextFormatter;
@@ -32,14 +34,14 @@ public class SetPopsCommand {
         ClientPlayNetworkHandler nh = client.getNetworkHandler();
         
         for (PlayerListEntry entry : nh.getPlayerList()) {
-            String name = entry.getProfile().getName();
+            String name = GameProfileHelper.getName(entry.getProfile());
             if (name.toLowerCase().startsWith(input)) {
                 builder.suggest(name);
             }
         }
         
         if (client.player != null) {
-            String selfName = client.player.getGameProfile().getName();
+            String selfName = GameProfileHelper.getName(client.player.getGameProfile());
             if (selfName.toLowerCase().startsWith(input)) {
                 builder.suggest(selfName);
             }
@@ -67,11 +69,11 @@ public class SetPopsCommand {
         if (client == null || client.getNetworkHandler() == null) return null;
         ClientPlayNetworkHandler nh = client.getNetworkHandler();
         for (PlayerListEntry e : nh.getPlayerList()) {
-            if (e.getProfile().getName().equalsIgnoreCase(name)) {
-                return e.getProfile().getId();
+            if (GameProfileHelper.getName(e.getProfile()).equalsIgnoreCase(name)) {
+                return GameProfileHelper.getId(e.getProfile());
             }
         }
-        if (client.player != null && client.player.getGameProfile().getName().equalsIgnoreCase(name)) {
+        if (client.player != null && GameProfileHelper.getName(client.player.getGameProfile()).equalsIgnoreCase(name)) {
             return client.player.getUuid();
         }
         return null;

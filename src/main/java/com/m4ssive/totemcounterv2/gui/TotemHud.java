@@ -88,7 +88,7 @@ public class TotemHud {
                     }
                 }
 
-                playersToShow.add(new PlayerInfo(player.getGameProfile().getName(), entry.getValue(), player.getUuid()));
+                playersToShow.add(new PlayerInfo(player.getName().getString(), entry.getValue(), player.getUuid()));
             }
 
             playersToShow.sort((a, b) -> Integer.compare(b.totemCount, a.totemCount));
@@ -122,8 +122,8 @@ public class TotemHud {
                 players.size()
             );
         
-        context.getMatrices().push();
-        context.getMatrices().scale(config.scale, config.scale, 1.0f);
+        com.m4ssive.totemcounterv2.util.GuiHelper.push(context);
+        com.m4ssive.totemcounterv2.util.GuiHelper.scale(context, config.scale, config.scale, 1.0f);
 
         int scaledX = (int) (hudX / config.scale);
         int scaledY = (int) (hudY / config.scale);
@@ -182,7 +182,7 @@ public class TotemHud {
         if (players.isEmpty()) {
             int xOffset = scaledX + config.padding;
             int textY = yOffset + (iconSize - textRenderer.fontHeight) / 2;
-            context.drawText(textRenderer, "No totem pops", xOffset, textY, config.textColor, false);
+            com.m4ssive.totemcounterv2.util.TextHelper.drawText(context, textRenderer, net.minecraft.text.Text.literal("No totem pops"), xOffset, textY, config.textColor);
         } else {
             for (PlayerInfo player : players) {
                 int xOffset = scaledX + config.padding;
@@ -194,7 +194,7 @@ public class TotemHud {
                 
                 int textY = yOffset + (iconSize - textRenderer.fontHeight) / 2;
                 String playerName = player.name + " ";
-                context.drawText(textRenderer, playerName, xOffset, textY, config.textColor, false);
+                com.m4ssive.totemcounterv2.util.TextHelper.drawText(context, textRenderer, net.minecraft.text.Text.literal(playerName), xOffset, textY, config.textColor);
                 xOffset += textRenderer.getWidth(playerName);
                 
                 int countColor = getTotemCountColor(player.totemCount);
@@ -213,25 +213,25 @@ public class TotemHud {
                 }
 
                 if (Math.abs(scale - 1.0f) > 0.01f) {
-                    context.getMatrices().push();
-                    context.getMatrices().translate(xOffset, textY, 0);
-                    context.getMatrices().scale(scale, scale, 1.0f);
+                    com.m4ssive.totemcounterv2.util.GuiHelper.push(context);
+                    com.m4ssive.totemcounterv2.util.GuiHelper.translate(context, xOffset, textY, 0);
+                    com.m4ssive.totemcounterv2.util.GuiHelper.scale(context, scale, scale, 1.0f);
                     int sx = 0;
                     int sy = 0;
                     
                     int finalColor = countColor;
                     
                     if (config.countShadow) {
-                        context.drawTextWithShadow(textRenderer, countText, sx, sy, finalColor);
+                        com.m4ssive.totemcounterv2.util.TextHelper.drawTextWithShadow(context, textRenderer, net.minecraft.text.Text.literal(countText), sx, sy, finalColor);
                     } else {
-                        context.drawText(textRenderer, countText, sx, sy, finalColor, false);
+                        com.m4ssive.totemcounterv2.util.TextHelper.drawText(context, textRenderer, net.minecraft.text.Text.literal(countText), sx, sy, finalColor);
                     }
-                    context.getMatrices().pop();
+                    com.m4ssive.totemcounterv2.util.GuiHelper.pop(context);
                 } else {
                     if (config.countShadow) {
-                        context.drawTextWithShadow(textRenderer, countText, xOffset, textY, countColor);
+                        com.m4ssive.totemcounterv2.util.TextHelper.drawTextWithShadow(context, textRenderer, net.minecraft.text.Text.literal(countText), xOffset, textY, countColor);
                     } else {
-                        context.drawText(textRenderer, countText, xOffset, textY, countColor, false);
+                        com.m4ssive.totemcounterv2.util.TextHelper.drawText(context, textRenderer, net.minecraft.text.Text.literal(countText), xOffset, textY, countColor);
                     }
                 }
                 
@@ -239,7 +239,7 @@ public class TotemHud {
             }
         }
 
-        context.getMatrices().pop();
+        com.m4ssive.totemcounterv2.util.GuiHelper.pop(context);
     }
     
     private void renderEditModeOverlay(DrawContext context, MinecraftClient client) {
@@ -253,8 +253,8 @@ public class TotemHud {
         }
         
         String status = isDragging ? "§eDragging..." : isResizing ? "§bResizing..." : "§aEdit Mode ON";
-        context.drawTextWithShadow(textRenderer, status, 10, 10, 0xFFFFFF);
-        context.drawTextWithShadow(textRenderer, "§7Drag to move | Drag corners to resize | Press §eK §7to exit", 10, 22, 0xAAAAAA);
+        com.m4ssive.totemcounterv2.util.TextHelper.drawTextWithShadow(context, textRenderer, net.minecraft.text.Text.literal(status), 10, 10, 0xFFFFFF);
+        com.m4ssive.totemcounterv2.util.TextHelper.drawTextWithShadow(context, textRenderer, net.minecraft.text.Text.literal("§7Drag to move | Drag corners to resize | Press §eK §7to exit"), 10, 22, 0xAAAAAA);
     }
     
     private void drawCornerHandle(DrawContext context, int x, int y, int color) {

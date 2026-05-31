@@ -27,7 +27,9 @@ public class PlayerListHudMixin {
                 return;
             }
 
-            int count = mod.getTotemTracker().getTotemPops(entry.getProfile().getId());
+            java.util.UUID playerUuid = com.m4ssive.totemcounterv2.GameProfileHelper.getId(entry.getProfile());
+            if (playerUuid == null) return;
+            int count = mod.getTotemTracker().getTotemPops(playerUuid);
             
             if (count == 0) {
                 return;

@@ -122,7 +122,7 @@ public class ConfigScreen extends Screen {
 
     @Override
     protected void init() {
-        this.children().clear();
+        try { this.children().clear(); } catch (Exception ignored) {}
         this.widgets.clear();
         this.sectionHeaders.clear();
         
@@ -431,12 +431,12 @@ public class ConfigScreen extends Screen {
         float titleOffset = (1.0f - animationProgress) * 20.0f;
         int titleY = (int) (18 + titleOffset);
         float iconPulse = (float) (Math.sin(System.currentTimeMillis() / 500.0) * 0.1f + 1.0f);
-        context.getMatrices().push();
-        context.getMatrices().translate(this.width / 2 - 85, titleY - 2, 0);
-        context.getMatrices().scale(iconPulse, iconPulse, 1.0f);
+        com.m4ssive.totemcounterv2.util.GuiHelper.push(context);
+        com.m4ssive.totemcounterv2.util.GuiHelper.translate(context, this.width / 2 - 85, titleY - 2, 0);
+        com.m4ssive.totemcounterv2.util.GuiHelper.scale(context, iconPulse, iconPulse, 1.0f);
         context.drawItem(TOTEM_ICON, 0, 0);
-        context.getMatrices().pop();
-        context.drawCenteredTextWithShadow(this.textRenderer, 
+        com.m4ssive.totemcounterv2.util.GuiHelper.pop(context);
+        com.m4ssive.totemcounterv2.util.TextHelper.drawCenteredTextWithShadow(context, this.textRenderer, 
             this.title.copy().setStyle(net.minecraft.text.Style.EMPTY.withBold(true).withColor(0xFFE0E0FF)),
             this.width / 2 + 15, titleY, TEXT_PRIMARY);
         
@@ -459,8 +459,8 @@ public class ConfigScreen extends Screen {
         context.fill(panelX - borderWidth, panelY - borderWidth, panelX, panelY + panelHeight + borderWidth, borderColor);
         context.fill(panelX + panelWidth, panelY - borderWidth, panelX + panelWidth + borderWidth, panelY + panelHeight + borderWidth, borderColor);
         
-        context.getMatrices().push();
-        context.getMatrices().translate(0, -scrollOffset, 0);
+        com.m4ssive.totemcounterv2.util.GuiHelper.push(context);
+        com.m4ssive.totemcounterv2.util.GuiHelper.translate(context, 0, -scrollOffset, 0);
         
         for (SectionHeader header : sectionHeaders) {
             drawSectionHeader(context, header, mouseX, mouseY + scrollOffset);
@@ -475,11 +475,11 @@ public class ConfigScreen extends Screen {
                 continue;
             }
             
-            if (!sectionExpanded[widget.sectionIndex]) {
+            if (widget.sectionIndex >= 0 && !sectionExpanded[widget.sectionIndex]) {
                 continue;
             }
             
-            boolean isHovered = mouseX >= widget.x && mouseX <= widget.x + widget.width &&
+            boolean isHovered = mouseX >= widget.x - 25 && mouseX <= widget.x + widget.width &&
                                (mouseY + scrollOffset) >= widget.y && (mouseY + scrollOffset) <= widget.y + widget.height;
             
             if (isHovered) {
@@ -498,12 +498,11 @@ public class ConfigScreen extends Screen {
                 }
             }
             if (thresholdWidget != null) {
-                context.drawTextWithShadow(this.textRenderer, Text.literal("Threshold: "), 
-                    thresholdWidget.x - 105, thresholdWidget.y + 6, TEXT_SECONDARY);
+                com.m4ssive.totemcounterv2.util.TextHelper.drawTextWithShadow(context, this.textRenderer, Text.literal("Threshold: "), thresholdWidget.x - 105, thresholdWidget.y + 6, TEXT_SECONDARY);
             }
         }
         
-        context.getMatrices().pop();
+        com.m4ssive.totemcounterv2.util.GuiHelper.pop(context);
         context.disableScissor();
         
         int maxScroll = calculateMaxScroll();
@@ -542,16 +541,22 @@ public class ConfigScreen extends Screen {
     }
     
     private int calculateMaxScroll() {
-        int totalHeight = 0;
-        for (SectionHeader header : sectionHeaders) {
-            totalHeight += 30;
-            if (sectionExpanded[header.index]) {
-                totalHeight += header.widgetCount * 32 + 15;
-            }
-            totalHeight += 10;
+        // Widget'ların gerçek y koordinatlarından hesapla
+        int maxWidgetBottom = 0;
+        for (CustomWidget w : widgets) {
+            if (w.sectionIndex == -1) continue; // EDIT_MODE butonu sabit
+            if (w.sectionIndex >= 0 && !sectionExpanded[w.sectionIndex]) continue;
+            int bottom = w.y + w.height;
+            if (bottom > maxWidgetBottom) maxWidgetBottom = bottom;
         }
-        int panelHeight = this.height - 60 - 100;
-        return Math.max(0, totalHeight - panelHeight);
+        for (SectionHeader h : sectionHeaders) {
+            int bottom = h.y + 30;
+            if (bottom > maxWidgetBottom) maxWidgetBottom = bottom;
+        }
+        int panelY = 60;
+        int panelHeight = this.height - panelY - 100;
+        int contentEnd = maxWidgetBottom - panelY + 20; // 20px alt boşluk
+        return Math.max(0, contentEnd - panelHeight);
     }
     
     private void drawScrollBar(DrawContext context, int x, int y, int width, int height, int scroll, int maxScroll) {
@@ -586,17 +591,15 @@ public class ConfigScreen extends Screen {
         int arrowY = header.y + 7;
         String arrow = header.expanded ? "▼" : "▶";
         int arrowColor = isHovered ? GLOW_COLOR : pulseColor;
-        context.drawTextWithShadow(this.textRenderer, Text.literal(arrow), arrowX, arrowY, arrowColor);
+        com.m4ssive.totemcounterv2.util.TextHelper.drawTextWithShadow(context, this.textRenderer, Text.literal(arrow), arrowX, arrowY, arrowColor);
         
-        context.getMatrices().push();
-        context.getMatrices().translate(header.x - 3, header.y - 1, 0);
-        context.getMatrices().scale(1.2f, 1.2f, 1.0f);
+        com.m4ssive.totemcounterv2.util.GuiHelper.push(context);
+        com.m4ssive.totemcounterv2.util.GuiHelper.translate(context, header.x - 3, header.y - 1, 0);
+        com.m4ssive.totemcounterv2.util.GuiHelper.scale(context, 1.2f, 1.2f, 1.0f);
         context.drawItem(header.icon, 0, 0);
-        context.getMatrices().pop();
+        com.m4ssive.totemcounterv2.util.GuiHelper.pop(context);
         
-        context.drawTextWithShadow(this.textRenderer, 
-            Text.literal(header.text).setStyle(net.minecraft.text.Style.EMPTY.withBold(true).withColor(pulseColor)),
-            header.x + 22, header.y + 5, pulseColor);
+        com.m4ssive.totemcounterv2.util.TextHelper.drawTextWithShadow(context, this.textRenderer, Text.literal(header.text).setStyle(net.minecraft.text.Style.EMPTY.withBold(true).withColor(pulseColor)), header.x + 22, header.y + 5, pulseColor);
     }
     
     private void drawCustomWidget(DrawContext context, CustomWidget widget, boolean isHovered, int mouseX, int mouseY, float delta) {
@@ -613,13 +616,13 @@ public class ConfigScreen extends Screen {
         context.fill(widget.x - 25, widget.y, widget.x - 5, widget.y + widget.height, 
             isHovered ? (0x40 << 24) | 0x00333333 : (0x20 << 24) | 0x00222222);
         
-        context.getMatrices().push();
+        com.m4ssive.totemcounterv2.util.GuiHelper.push(context);
         float iconScale = isHovered ? 1.15f : 1.0f;
         float iconOffset = (1.0f - iconScale) * 8.0f;
-        context.getMatrices().translate(widget.x - 20 + iconOffset, widget.y + 2 + iconOffset, 0);
-        context.getMatrices().scale(iconScale, iconScale, 1.0f);
+        com.m4ssive.totemcounterv2.util.GuiHelper.translate(context, widget.x - 20 + iconOffset, widget.y + 2 + iconOffset, 0);
+        com.m4ssive.totemcounterv2.util.GuiHelper.scale(context, iconScale, iconScale, 1.0f);
         context.drawItem(widget.icon, 0, 0);
-        context.getMatrices().pop();
+        com.m4ssive.totemcounterv2.util.GuiHelper.pop(context);
         
         switch (widget.type) {
             case CHECKBOX:
@@ -666,8 +669,7 @@ public class ConfigScreen extends Screen {
         
         int labelX = checkboxX + checkboxSize + 12;
         int labelY = widget.y + 6;
-        context.drawTextWithShadow(this.textRenderer, Text.literal(widget.label), 
-            labelX, labelY, TEXT_PRIMARY);
+        com.m4ssive.totemcounterv2.util.TextHelper.drawTextWithShadow(context, this.textRenderer, Text.literal(widget.label), labelX, labelY, TEXT_PRIMARY);
     }
     
     private void drawCustomColorButton(DrawContext context, CustomWidget widget, boolean isHovered) {
@@ -679,14 +681,12 @@ public class ConfigScreen extends Screen {
         
         String labelText = widget.label;
         int labelWidth = this.textRenderer.getWidth(labelText + ": ");
-        context.drawTextWithShadow(this.textRenderer, Text.literal(labelText + ": "), 
-            buttonX + 8, buttonY + 6, TEXT_SECONDARY);
+        com.m4ssive.totemcounterv2.util.TextHelper.drawTextWithShadow(context, this.textRenderer, Text.literal(labelText + ": "), buttonX + 8, buttonY + 6, TEXT_SECONDARY);
         
         String colorText = widget.selectedColor != null ? widget.selectedColor.getDisplayName() : "Unknown";
         int textColor = widget.selectedColor != null ? widget.selectedColor.getColor() : TEXT_PRIMARY;
         int colorX = buttonX + labelWidth + 8;
-        context.drawTextWithShadow(this.textRenderer, Text.literal(colorText), 
-            colorX, buttonY + 6, textColor);
+        com.m4ssive.totemcounterv2.util.TextHelper.drawTextWithShadow(context, this.textRenderer, Text.literal(colorText), colorX, buttonY + 6, textColor);
         
         if (widget.selectedColor != null) {
             int colorBoxX = colorX + this.textRenderer.getWidth(colorText) + 8;
@@ -710,8 +710,7 @@ public class ConfigScreen extends Screen {
         int trackY = sliderY + (sliderHeight - trackHeight) / 2;
         
         String labelText = widget.label + ":";
-        context.drawTextWithShadow(this.textRenderer, Text.literal(labelText), 
-            sliderX + 8, sliderY + 6, TEXT_SECONDARY);
+        com.m4ssive.totemcounterv2.util.TextHelper.drawTextWithShadow(context, this.textRenderer, Text.literal(labelText), sliderX + 8, sliderY + 6, TEXT_SECONDARY);
         
         int trackStartX = sliderX + this.textRenderer.getWidth(labelText) + 12;
         context.fill(trackStartX, trackY, trackStartX + sliderWidth, trackY + trackHeight, WIDGET_BG);
@@ -734,8 +733,7 @@ public class ConfigScreen extends Screen {
         
         String valueText = String.format("%.2f", widget.value);
         int valueX = trackStartX + sliderWidth + 12;
-        context.drawTextWithShadow(this.textRenderer, Text.literal(valueText), 
-            valueX, sliderY + 6, TEXT_PRIMARY);
+        com.m4ssive.totemcounterv2.util.TextHelper.drawTextWithShadow(context, this.textRenderer, Text.literal(valueText), valueX, sliderY + 6, TEXT_PRIMARY);
     }
     
     private void drawCustomTextField(DrawContext context, CustomWidget widget, boolean isHovered) {
@@ -761,8 +759,7 @@ public class ConfigScreen extends Screen {
             }
         }
         
-        context.drawTextWithShadow(this.textRenderer, Text.literal(text), 
-            fieldX + 6, fieldY + 6, TEXT_PRIMARY);
+        com.m4ssive.totemcounterv2.util.TextHelper.drawTextWithShadow(context, this.textRenderer, Text.literal(text), fieldX + 6, fieldY + 6, TEXT_PRIMARY);
     }
     
     private void drawCustomButton(DrawContext context, int x, int y, int width, int height, String text, boolean isHovered) {
@@ -784,7 +781,7 @@ public class ConfigScreen extends Screen {
         if (text != null && !text.isEmpty()) {
             int textX = x + (width - this.textRenderer.getWidth(text)) / 2;
             int textY = y + (height - this.textRenderer.fontHeight) / 2;
-            context.drawTextWithShadow(this.textRenderer, Text.literal(text), textX, textY, TEXT_PRIMARY);
+            com.m4ssive.totemcounterv2.util.TextHelper.drawTextWithShadow(context, this.textRenderer, Text.literal(text), textX, textY, TEXT_PRIMARY);
         }
     }
     
@@ -815,113 +812,107 @@ public class ConfigScreen extends Screen {
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (button == 0) {
+        TotemCounterV2Mod.LOGGER.info("[TotemCounterV2] ConfigScreen mouseClicked! X=" + mouseX + ", Y=" + mouseY + ", Button=" + button);
+        if (button == 0 || button == 1 || button == -1) { // Accept left/right clicks for compatibility
             int bottomY = this.height - 85;
             int buttonWidth = 150;
             int buttonSpacing = 20;
             int totalWidth = buttonWidth * 2 + buttonSpacing;
             int startX = this.width / 2 - totalWidth / 2;
             
+            TotemCounterV2Mod.LOGGER.info("SaveBtn bounds: X=[" + startX + "," + (startX+buttonWidth) + "], Y=[" + bottomY + "," + (bottomY+25) + "]");
+            
             if (mouseX >= startX && mouseX <= startX + buttonWidth &&
                 mouseY >= bottomY && mouseY <= bottomY + 25) {
-                saveConfig();
-                this.close();
-                return true;
+                TotemCounterV2Mod.LOGGER.info("Clicked Save & Close!");
+                saveConfig(); this.close(); return true;
             }
-            
-            if (mouseX >= startX + buttonWidth + buttonSpacing && 
+            if (mouseX >= startX + buttonWidth + buttonSpacing &&
                 mouseX <= startX + buttonWidth + buttonSpacing + buttonWidth &&
                 mouseY >= bottomY && mouseY <= bottomY + 25) {
-                this.close();
-                return true;
+                TotemCounterV2Mod.LOGGER.info("Clicked Cancel!");
+                this.close(); return true;
             }
-            
             int editModeButtonY = this.height - 45;
             int editModeButtonX = this.width / 2 - 100;
             if (mouseX >= editModeButtonX && mouseX <= editModeButtonX + 200 &&
                 mouseY >= editModeButtonY && mouseY <= editModeButtonY + 30) {
+                TotemCounterV2Mod.LOGGER.info("Clicked Edit Mode!");
                 this.client.setScreen(new com.m4ssive.totemcounterv2.gui.EditModeScreen());
                 return true;
             }
+            int panelXCheck = this.width / 2 - 200;
+            int panelYCheck = 60;
+            boolean inPanel = mouseX >= panelXCheck && mouseX <= panelXCheck + 400
+                           && mouseY >= panelYCheck && mouseY <= panelYCheck + (this.height - panelYCheck - 100);
+                           
+            TotemCounterV2Mod.LOGGER.info("Panel check: inPanel=" + inPanel + ". MouseY:" + mouseY + " needs to be between " + panelYCheck + " and " + (panelYCheck + (this.height - panelYCheck - 100)));
             
-            for (SectionHeader header : sectionHeaders) {
-                if (mouseX >= header.x - 25 && mouseX <= header.x + 380 && 
-                    (mouseY + scrollOffset) >= header.y && (mouseY + scrollOffset) <= header.y + 25) {
-                    sectionExpanded[header.index] = !sectionExpanded[header.index];
-                    header.expanded = sectionExpanded[header.index];
-                    this.init();
-                    return true;
+            if (inPanel) {
+                for (SectionHeader header : sectionHeaders) {
+                    if (mouseX >= header.x - 25 && mouseX <= header.x + 380 &&
+                        (mouseY + scrollOffset) >= header.y && (mouseY + scrollOffset) <= header.y + 25) {
+                        sectionExpanded[header.index] = !sectionExpanded[header.index];
+                        header.expanded = sectionExpanded[header.index];
+                        TotemCounterV2Mod.LOGGER.info("Clicked Section Header: " + header.index);
+                        this.init(); return true;
+                    }
                 }
-            }
-            
-            for (int i = 0; i < widgets.size(); i++) {
-                CustomWidget widget = widgets.get(i);
-                
-                if (widget.sectionIndex == -1 && widget.data instanceof String && 
-                    widget.data.equals("EDIT_MODE")) {
-                    continue;
-                }
-                
-                if (widget.sectionIndex >= 0 && !sectionExpanded[widget.sectionIndex]) {
-                    continue;
-                }
-                
-                int checkY = (int) (mouseY + scrollOffset);
-                if (mouseX >= widget.x && mouseX <= widget.x + widget.width &&
-                    checkY >= widget.y && checkY <= widget.y + widget.height) {
-                    
-                    selectedWidgetIndex = i;
-                    
-                    switch (widget.type) {
-                        case CHECKBOX:
-                            widget.checked = !widget.checked;
-                            updateCheckboxConfig(widget.label, widget.checked);
-                            saveConfig();
-                            return true;
-                        case COLOR_BUTTON:
-                            if (widget.colorOptions != null && widget.colorOptions.length > 0) {
-                                int currentIndex = 0;
-                                for (int j = 0; j < widget.colorOptions.length; j++) {
-                                    if (widget.colorOptions[j] == widget.selectedColor) {
-                                        currentIndex = j;
-                                        break;
+                for (int i = 0; i < widgets.size(); i++) {
+                    CustomWidget widget = widgets.get(i);
+                    if (widget.sectionIndex == -1 && widget.data instanceof String && widget.data.equals("EDIT_MODE")) continue;
+                    if (widget.sectionIndex >= 0 && !sectionExpanded[widget.sectionIndex]) continue;
+                    int checkY = (int)(mouseY + scrollOffset);
+                    if (mouseX >= widget.x - 25 && mouseX <= widget.x + widget.width &&
+                        checkY >= widget.y && checkY <= widget.y + widget.height) {
+                        selectedWidgetIndex = i;
+                        TotemCounterV2Mod.LOGGER.info("Clicked Widget: " + widget.label + ", type=" + widget.type);
+                        switch (widget.type) {
+                            case CHECKBOX:
+                                widget.checked = !widget.checked;
+                                updateCheckboxConfig(widget.label, widget.checked);
+                                saveConfig(); return true;
+                            case COLOR_BUTTON:
+                                if (widget.colorOptions != null && widget.colorOptions.length > 0) {
+                                    int curIdx = 0;
+                                    for (int j = 0; j < widget.colorOptions.length; j++) {
+                                        if (widget.colorOptions[j] == widget.selectedColor) { curIdx = j; break; }
                                     }
+                                    int nxtIdx = (curIdx + 1) % widget.colorOptions.length;
+                                    widget.selectedColor = widget.colorOptions[nxtIdx];
+                                    updateColorConfig(widget.label, widget.selectedColor);
+                                    saveConfig();
                                 }
-                                int nextIndex = (currentIndex + 1) % widget.colorOptions.length;
-                                widget.selectedColor = widget.colorOptions[nextIndex];
-                                updateColorConfig(widget.label, widget.selectedColor);
-                                saveConfig();
-                            }
-                            return true;
-                        case SLIDER:
-                            float normalizedValue = (float) ((mouseX - widget.x) / widget.width);
-                            normalizedValue = Math.max(0.0f, Math.min(1.0f, normalizedValue));
-                            widget.value = widget.minValue + normalizedValue * (widget.maxValue - widget.minValue);
-                            updateSliderConfig(widget.label, widget.value);
-                            saveConfig();
-                            return true;
-                        case TEXT_FIELD:
-                            editingTextField = widget;
-                            textInputBuffer = new StringBuilder(widget.textValue != null ? widget.textValue : "");
-                            return true;
-                        case BUTTON:
-                            if (widget.data instanceof SoundManager.SoundType[]) {
-                                SoundManager.SoundType[] soundTypes = (SoundManager.SoundType[]) widget.data;
-                                int currentIndex = config.soundType;
-                                int nextIndex = (currentIndex + 1) % soundTypes.length;
-                                config.soundType = nextIndex;
-                                widget.textValue = soundTypes[nextIndex].getDisplayName();
-                                saveConfig();
-                            }
-                            return true;
+                                return true;
+                            case SLIDER:
+                                int sliderTrackStartX = widget.x + this.textRenderer.getWidth(widget.label + ":") + 12;
+                                int sliderTrackWidth = widget.width - 80;
+                                float rawNorm = sliderTrackWidth > 0 ? (float)((mouseX - sliderTrackStartX) / (double)sliderTrackWidth) : 0f;
+                                rawNorm = Math.max(0.0f, Math.min(1.0f, rawNorm));
+                                widget.value = widget.minValue + rawNorm * (widget.maxValue - widget.minValue);
+                                updateSliderConfig(widget.label, widget.value);
+                                saveConfig(); return true;
+                            case TEXT_FIELD:
+                                editingTextField = widget;
+                                textInputBuffer = new StringBuilder(widget.textValue != null ? widget.textValue : "");
+                                return true;
+                            case BUTTON:
+                                if (widget.data instanceof SoundManager.SoundType[]) {
+                                    SoundManager.SoundType[] soundTypes = (SoundManager.SoundType[]) widget.data;
+                                    int curIdx2 = config.soundType;
+                                    int nxtIdx2 = (curIdx2 + 1) % soundTypes.length;
+                                    config.soundType = nxtIdx2;
+                                    widget.textValue = soundTypes[nxtIdx2].getDisplayName();
+                                    saveConfig();
+                                }
+                                return true;
+                        }
                     }
                 }
             }
         }
-        
         return super.mouseClicked(mouseX, mouseY, button);
     }
-    
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double horizontalAmount, double verticalAmount) {
         int maxScroll = calculateMaxScroll();
@@ -937,9 +928,14 @@ public class ConfigScreen extends Screen {
         if (button == 0 && selectedWidgetIndex >= 0 && selectedWidgetIndex < widgets.size()) {
             CustomWidget widget = widgets.get(selectedWidgetIndex);
             if (widget.type == WidgetType.SLIDER) {
-                float normalizedValue = (float) ((mouseX - widget.x) / widget.width);
-                normalizedValue = Math.max(0.0f, Math.min(1.0f, normalizedValue));
-                widget.value = widget.minValue + normalizedValue * (widget.maxValue - widget.minValue);
+                // Mirror the exact same calculation as mouseClicked for consistency
+                int sliderTrackStartX = widget.x + this.textRenderer.getWidth(widget.label + ":") + 12;
+                int sliderTrackWidth = widget.width - 80;
+                float rawNorm = sliderTrackWidth > 0
+                    ? (float) ((mouseX - sliderTrackStartX) / (double) sliderTrackWidth)
+                    : 0f;
+                rawNorm = Math.max(0.0f, Math.min(1.0f, rawNorm));
+                widget.value = widget.minValue + rawNorm * (widget.maxValue - widget.minValue);
                 updateSliderConfig(widget.label, widget.value);
                 saveConfig();
                 return true;

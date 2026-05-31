@@ -30,7 +30,7 @@ public class TotemTracker {
         Long lastTime = lastPopTime.get(playerId);
         if (lastTime != null && (currentTime - lastTime) < DUPLICATE_COOLDOWN) {
             TotemCounterV2Mod.LOGGER.warn("§e[TotemCounter] Duplicate event filtered for {}", 
-                ((PlayerEntity) entity).getGameProfile().getName());
+                entity.getName().getString());
             return;
         }
         
@@ -39,7 +39,7 @@ public class TotemTracker {
         lastPopTime.put(playerId, currentTime);
         
         TotemCounterV2Mod.LOGGER.info("§a[TotemCounter] {} popped a totem! Total: {}", 
-            ((PlayerEntity) entity).getGameProfile().getName(), 
+            entity.getName().getString(), 
             newCount);
         
         ModConfig config = TotemCounterV2Mod.getInstance().getConfig();
@@ -124,7 +124,7 @@ public class TotemTracker {
             return;
         }
         
-        String playerName = player.getGameProfile().getName();
+        String playerName = player.getName().getString();
         
         MutableText formattedMsg = Text.literal("")
             .append(Text.literal("[TotemCounter] ").setStyle(net.minecraft.text.Style.EMPTY.withColor(0xFFAA00).withBold(true)))

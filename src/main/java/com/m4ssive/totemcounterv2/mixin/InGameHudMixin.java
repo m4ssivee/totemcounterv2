@@ -78,11 +78,7 @@ public class InGameHudMixin {
             int textY = iconY + (iconSize - textHeight) / 2;
             
             // Shadow ile text çiz
-            if (config.inventoryTotemCountShadow) {
-                context.drawTextWithShadow(this.client.textRenderer, countText, textX, textY, config.inventoryTotemCountColor);
-            } else {
-                context.drawText(this.client.textRenderer, countText, textX, textY, config.inventoryTotemCountColor, false);
-            }
+            com.m4ssive.totemcounterv2.util.TextHelper.drawTextWithShadow(context, this.client.textRenderer, net.minecraft.text.Text.literal(countText), textX, textY, config.inventoryTotemCountColor);
         } catch (Exception e) {
             TotemCounterV2Mod.LOGGER.error("Error rendering inventory totem count", e);
         }
